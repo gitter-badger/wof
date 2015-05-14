@@ -1,6 +1,8 @@
 <?php
 namespace frontend\controllers;
 
+use common\models\Match;
+use common\models\MatchResult;
 use Yii;
 use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
@@ -8,6 +10,7 @@ use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use yii\base\InvalidParamException;
+use yii\mongodb\Connection;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -63,6 +66,30 @@ class SiteController extends Controller
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
+    }
+
+    public function actionSync(){
+
+        /** @var Connection $mongo */
+        $mongo = Yii::$app->mongodb;
+
+        $mongo->getCollection('matches')->remove();
+
+        $matches = Match::find()->all();
+
+        foreach($matches as $match){
+            /** @var Match $match */
+            if ($match->result_id!=MatchResult::NO_PLAYED){
+
+
+                $mongoMatch = new \common\models\mongo\Match();
+                $mongoMatch->title = $match->title;
+                $mongoMatch->_id = $match->id;
+                $mongoMatch->save();
+
+            }
+
+        }
     }
 
     public function actionIndex()
