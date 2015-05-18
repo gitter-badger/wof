@@ -1,35 +1,25 @@
 <?php
 
-namespace common\models;
+namespace frontend\modules\admin\models;
 
 use Yii;
 
 /**
- * This is the model class for table "position".
+ * This is the model class for table "news".
  *
  * @property integer $id
  * @property string $title
- *
- * @property Player[] $players
+ * @property string $text
  */
-class Position extends \yii\db\ActiveRecord
+class News extends \yii\db\ActiveRecord
 {
-
-    const GK = 1;
-    const LD = 2;
-    const CD = 3;
-    const RD = 4;
-    const LM = 5;
-    const CM = 6;
-    const RM = 7;
-    const CF = 8;
 
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'position';
+        return 'news';
     }
 
     /**
@@ -38,6 +28,7 @@ class Position extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['text'], 'string'],
             [['title'], 'string', 'max' => 255]
         ];
     }
@@ -50,14 +41,16 @@ class Position extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
+            'text' => 'Text',
         ];
     }
 
     /**
+     * @property Comment[] $comments
      * @return \yii\db\ActiveQuery
      */
-    public function getPlayers()
+    public function getComments()
     {
-        return $this->hasMany(Player::className(), ['position_id' => 'id']);
+        return $this->hasMany(Comment::className(), ['id_news' => 'id']);
     }
 }
